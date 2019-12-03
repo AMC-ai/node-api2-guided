@@ -9,6 +9,8 @@ router.use(express.json());
 
 // we need to add any additional URL part that goes after /api/hubs --here
 
+// ****REMEMBER TO UPDATE THE PATH ****
+
 router.get('/', (req, res) => {
     Hubs.find(req.query)
         .then(hubs => {
@@ -93,7 +95,41 @@ router.put('/:id', (req, res) => {
 });
 
 // add an endpoint that returns all the messages for a hub
+// GET /api/hubs/:id/messages 
+router.get("/:id/messages", (req, res) => {
+    Hubs.findHubMessages(req.params.id)
+        .then(messages => {
+            res
+                .status(200)
+                .json(messages);
+        })
+        .catch(error => {
+            console.log(error);
+            res
+                .status(500)
+                .json({ errorMessage: 'error getting hub messages' });
+        });
+});
+
+// GET /api/messages/:hubId
+// GET /api/threads/:id/messages
+
+
 // add an endpoint for adding new message to a hub
+router.post('/:id/messages', (req, res) => {
+    Hubs.addMessage(req.body)
+        .then(hub => {
+            res.status(201).json(hub);
+        })
+        .catch(error => {
+            // log error to database
+            console.log(error);
+            res.status(500).json({
+                message: 'Error adding the hub',
+            });
+        });
+});
+
 
 //export default router; // ES6 Modules
 module.exports = router;
